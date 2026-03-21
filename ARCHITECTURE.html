@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transfer System — Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0c0e14;
+    --surface: #13151e;
+    --border:  #1e2130;
+    --muted:   #3a3f52;
+    --text:    #c8cdd8;
+    --bright:  #eef0f5;
+    --accent:  #4f8ef7;
+    --teal:    #2ec4b6;
+    --amber:   #f4a535;
+    --red:     #e05b5b;
+    --green:   #4caf7d;
+    --mono:    'JetBrains Mono', monospace;
+    --sans:    'Syne', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.7; }
+  .page { max-width: 1060px; margin: 0 auto; padding: 60px 32px 100px; }
+
+  /* ── header ── */
+  header { border-bottom: 1px solid var(--border); padding-bottom: 44px; margin-bottom: 60px; }
+  .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  h1 { font-size: clamp(28px,5vw,46px); font-weight: 800; color: var(--bright); line-height: 1.15; }
+  header p { margin-top: 14px; max-width: 620px; font-size: 16px; }
+
+  /* ── section ── */
+  section { margin-bottom: 64px; }
+  h2 { font-size: 11px; font-family: var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 17px; font-weight: 700; color: var(--bright); margin-bottom: 8px; }
+
+  /* ── problem / solution cards ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .ps-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+  .ps-card .ps-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+  .ps-card h3 { font-size: 16px; margin-bottom: 10px; }
+  .ps-card p { font-size: 14px; }
+
+  /* ── flow steps ── */
+  .flow { display: flex; flex-direction: column; }
+  .flow-step { display: grid; grid-template-columns: 28px 1fr; gap: 0 20px; }
+  .spine { display: flex; flex-direction: column; align-items: center; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .line { width: 2px; flex: 1; min-height: 28px; background: var(--border); }
+  .fc { padding-bottom: 32px; }
+  .fc .step-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+  .fc p { font-size: 14px; }
+  .pill { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 4px; margin: 6px 4px 0 0; }
+
+  /* ── service cards grid ── */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; transition: border-color .2s; }
+  .card:hover { border-color: var(--muted); }
+  .card-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; margin-bottom: 12px; }
+  .card h3 { font-size: 15px; margin-bottom: 6px; }
+  .card p { font-size: 13px; }
+  .card .port { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 10px; }
+  .card ul { margin-top: 10px; padding-left: 16px; font-size: 13px; }
+  .card ul li { margin-bottom: 4px; }
+
+  /* ── guarantee tiles ── */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .tile .t-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+  .tile .t-value { font-size: 16px; font-weight: 700; color: var(--bright); margin-bottom: 4px; }
+  .tile p { font-size: 12px; }
+
+  /* ── version table ── */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 0 16px 10px 0; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 16px 10px 0; border-bottom: 1px solid var(--border); color: var(--text); }
+  td:first-child { color: var(--bright); font-weight: 600; }
+  td code { font-family: var(--mono); font-size: 13px; color: var(--accent); }
+
+  /* ── code block ── */
+  .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; font-family: var(--mono); font-size: 12.5px; line-height: 1.9; overflow-x: auto; }
+  .code-block .cm { color: var(--muted); }
+  .code-block .ck { color: var(--accent); }
+  .code-block .cv { color: var(--teal); }
+  .code-block .ch { color: var(--amber); }
+
+  /* ── file tree ── */
+  .tree { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; font-family: var(--mono); font-size: 12.5px; line-height: 2; }
+  .tree .td { color: var(--accent); }
+  .tree .tf { color: var(--text); }
+  .tree .tn { color: var(--muted); font-size: 11px; }
+
+  /* ── colour helpers ── */
+  .c-accent{color:var(--accent)} .c-teal{color:var(--teal)} .c-amber{color:var(--amber)}
+  .c-red{color:var(--red)} .c-green{color:var(--green)}
+  .bg-accent{background:rgba(79,142,247,.12)} .bg-teal{background:rgba(46,196,182,.12)}
+  .bg-amber{background:rgba(244,165,53,.12)} .bg-red{background:rgba(224,91,91,.12)}
+  .bg-green{background:rgba(76,175,125,.12)}
+  .bd-accent{border-color:rgba(79,142,247,.35)!important} .bd-teal{border-color:rgba(46,196,182,.35)!important}
+  .bd-amber{border-color:rgba(244,165,53,.35)!important} .bd-green{border-color:rgba(76,175,125,.35)!important}
+  .bd-red{border-color:rgba(224,91,91,.35)!important}
+
+  @media(max-width:640px){ .two-col{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header>
+    <div class="tag">Architecture · com.azizyilmaz · Spring Boot 4.0.4</div>
+    <h1>Transfer System<br>Outbox + Kafka Architecture</h1>
+    <p>
+      This document explains the design of the money transfer system — why it was built this way,
+      how data flows through it, and what each component is responsible for.
+    </p>
+  </header>
+
+  <!-- 01 THE PROBLEM -->
+  <section>
+    <h2>01 — The problem this system solves</h2>
+    <div class="two-col">
+      <div class="ps-card bd-red">
+        <div class="ps-label c-red">Before — broken design</div>
+        <h3>Database lock timeout</h3>
+        <p>
+          Every transfer request tried to <code>UPDATE</code> the same firm account row at the same time.
+          The database locked that row for each update. When many requests arrived together, they all
+          waited for the lock, and many of them timed out before they could proceed.
+        </p>
+      </div>
+      <div class="ps-card bd-green">
+        <div class="ps-label c-green">After — this design</div>
+        <h3>Zero lock conflicts</h3>
+        <p>
+          The transfer API no longer touches the account row at all.
+          It only writes a new row into the <code>outbox_events</code> table.
+          A Kafka consumer then reads these events in order and updates the balance one at a time,
+          so there is never more than one writer at once.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 DATA FLOW -->
+  <section>
+    <h2>02 — How a transfer moves through the system</h2>
+    <div class="flow">
+
+      <div class="flow-step">
+        <div class="spine"><div class="dot" style="background:var(--accent)"></div><div class="line"></div></div>
+        <div class="fc">
+          <div class="step-label c-accent">Step 1 — Firm sends a request</div>
+          <h3>POST /api/v1/transfers</h3>
+          <p>
+            The firm's system calls the REST API with a <code>firmAccountId</code>, a <code>customerAccountId</code>,
+            an <code>amount</code>, and a <code>correlationId</code>. The <code>correlationId</code> is a unique
+            key chosen by the caller — it allows the system to recognise and ignore duplicate requests safely.
+          </p>
+          <span class="pill bg-accent c-accent">HTTP 202 Accepted</span>
+          <span class="pill bg-teal c-teal">idempotent</span>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="spine"><div class="dot" style="background:var(--teal)"></div><div class="line"></div></div>
+        <div class="fc">
+          <div class="step-label c-teal">Step 2 — One database transaction writes two rows</div>
+          <h3>transfers + outbox_events (PENDING)</h3>
+          <p>
+            Inside a single transaction, the service creates a record in the <code>transfers</code> table
+            and a record in the <code>outbox_events</code> table. These two writes either both succeed or both
+            fail together. The firm account row is never touched here. This is the core of the
+            <strong>Transactional Outbox Pattern</strong>.
+          </p>
+          <span class="pill bg-teal c-teal">atomic</span>
+          <span class="pill bg-green c-green">no account lock</span>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="spine"><div class="dot" style="background:var(--amber)"></div><div class="line"></div></div>
+        <div class="fc">
+          <div class="step-label c-amber">Step 3 — Outbox relay sends events to Kafka</div>
+          <h3>PENDING → Kafka topic → PUBLISHED</h3>
+          <p>
+            A scheduled thread inside <code>transfer-service</code> runs every 500 ms.
+            It reads all PENDING rows from the outbox table and publishes them to the
+            <code>transfer.initiated.v1</code> Kafka topic. The <code>aggregateId</code>
+            (the transfer ID) is used as the Kafka partition key, so all events for the same
+            transfer always go to the same partition in the same order.
+            If publishing fails, it retries up to five times before marking the event as FAILED.
+          </p>
+          <span class="pill bg-amber c-amber">async</span>
+          <span class="pill bg-amber c-amber">at-least-once</span>
+          <span class="pill bg-amber c-amber">up to 5 retries</span>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="spine"><div class="dot" style="background:var(--green)"></div><div class="line"></div></div>
+        <div class="fc">
+          <div class="step-label c-green">Step 4 — Balance Processor consumes events in order</div>
+          <h3>Sequential consumption → balance update</h3>
+          <p>
+            The <code>balance-processor</code> service listens to the Kafka topic. Because
+            <code>firmAccountId</code> is the partition key, all events for a given firm arrive
+            in the same partition, in order. The consumer processes them one by one.
+            Before updating the balance, it checks the <code>processed_events</code> table to make sure
+            this <code>transferId</code> has not already been handled — this protects against Kafka
+            delivering the same message twice.
+          </p>
+          <span class="pill bg-green c-green">sequential</span>
+          <span class="pill bg-green c-green">idempotent dedupe</span>
+          <span class="pill bg-green c-green">Dead Letter Topic</span>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="spine"><div class="dot" style="background:var(--muted)"></div></div>
+        <div class="fc">
+          <div class="step-label" style="color:var(--muted)">Step 5 — Firm checks the result</div>
+          <h3>GET /api/v1/transfers/{id}/status</h3>
+          <p>
+            The firm can poll this endpoint at any time using the <code>transferId</code> from step 1.
+            The status moves from <code>INITIATED</code> to <code>PROCESSING</code> to <code>COMPLETED</code>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 SERVICES -->
+  <section>
+    <h2>03 — Services and their responsibilities</h2>
+    <div class="cards">
+
+      <div class="card bd-accent">
+        <div class="card-icon bg-accent">🚀</div>
+        <h3 class="c-accent">transfer-service</h3>
+        <p>Receives transfer requests, writes transfer + outbox records in one transaction, and relays outbox events to Kafka on a schedule.</p>
+        <div class="port">HTTP :8080</div>
+        <ul>
+          <li>TransferController</li>
+          <li>TransferStatusController</li>
+          <li>TransferService</li>
+          <li>OutboxRelayScheduler</li>
+          <li>GlobalExceptionHandler</li>
+          <li>Flyway migrations</li>
+        </ul>
+      </div>
+
+      <div class="card bd-teal">
+        <div class="card-icon bg-teal">⚙️</div>
+        <h3 class="c-teal">balance-processor</h3>
+        <p>Listens to Kafka, processes events one by one, updates the firm account balance, and protects against duplicate processing.</p>
+        <div class="port">Headless — Kafka only (:8081 actuator)</div>
+        <ul>
+          <li>TransferEventConsumer</li>
+          <li>BalanceUpdateService</li>
+          <li>KafkaConsumerConfig (DLT)</li>
+          <li>ProcessedEvent deduplification</li>
+        </ul>
+      </div>
+
+      <div class="card bd-amber">
+        <div class="card-icon bg-amber">📦</div>
+        <h3 class="c-amber">common-lib</h3>
+        <p>A shared library with no Spring Boot dependency. Contains the data transfer objects and Kafka event types used by both services.</p>
+        <div class="port">Shared JAR — no HTTP</div>
+        <ul>
+          <li>TransferRequest (REST input)</li>
+          <li>TransferEvent (Kafka schema)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="background:rgba(58,63,82,.4)">🗄️</div>
+        <h3>Infrastructure</h3>
+        <p>PostgreSQL 16, Apache Kafka 4.1.0 (via Confluent 7.6.0), and Kafka UI. All started with a single <code>docker compose up</code> command.</p>
+        <div class="port">docker-compose.yml</div>
+        <ul>
+          <li>3 partitions → 3 consumer threads</li>
+          <li>DLT: transfer.initiated.v1.DLT</li>
+          <li>Kafka UI at :8090</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 04 GUARANTEES -->
+  <section>
+    <h2>04 — System guarantees</h2>
+    <div class="tiles">
+      <div class="tile bd-green">
+        <div class="t-label c-green">No lock timeouts</div>
+        <div class="t-value">Append-only writes</div>
+        <p>The transfer API only inserts new rows. It never updates the firm account row. Lock contention is gone.</p>
+      </div>
+      <div class="tile bd-accent">
+        <div class="t-label c-accent">Idempotency</div>
+        <div class="t-value">correlationId</div>
+        <p>Sending the same request twice returns the same transferId and does not create a second transfer.</p>
+      </div>
+      <div class="tile bd-teal">
+        <div class="t-label c-teal">Exactly-once balance update</div>
+        <div class="t-value">Deduplification</div>
+        <p>Kafka delivers at-least-once. The <code>processed_events</code> table ensures each transferId changes the balance only once.</p>
+      </div>
+      <div class="tile bd-amber">
+        <div class="t-label c-amber">No data loss</div>
+        <div class="t-value">Transactional outbox</div>
+        <p>Transfer and outbox records are written in the same database transaction. If the app crashes after writing, the relay picks it up on restart.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 FILE TREE -->
+  <section>
+    <h2>05 — Project structure</h2>
+    <div class="tree">
+<span class="td">transfer-system/</span>
+├── <span class="tf">pom.xml</span>                        <span class="tn">← Maven 4.1.0 root, groupId: com.azizyilmaz</span>
+├── <span class="tf">docker-compose.yml</span>             <span class="tn">← postgres + kafka + kafka-ui</span>
+├── <span class="tf">mvnw / mvnw.cmd</span>                <span class="tn">← Maven wrapper (Linux / Windows)</span>
+│
+├── <span class="td">common-lib/</span>
+│   └── src/main/java/com/azizyilmaz/common/
+│       ├── <span class="tf">dto/TransferRequest.java</span>     <span class="tn">← REST input, Jakarta Validation 3.1</span>
+│       └── <span class="tf">event/TransferEvent.java</span>     <span class="tn">← Kafka message schema (Java record)</span>
+│
+├── <span class="td">transfer-service/</span>                <span class="tn">← port 8080</span>
+│   └── src/main/java/com/azizyilmaz/transfer/
+│       ├── <span class="tf">TransferServiceApplication.java</span>
+│       ├── <span class="td">controller/</span>  TransferController.java
+│       │               TransferStatusController.java
+│       ├── <span class="td">service/</span>     TransferService.java        <span class="tn">← single TX: transfer + outbox</span>
+│       ├── <span class="td">domain/</span>      Transfer.java
+│       ├── <span class="td">outbox/</span>      OutboxEvent.java
+│       │               OutboxEventRepository.java
+│       │               OutboxRelayScheduler.java    <span class="tn">← polls DB → publishes to Kafka</span>
+│       ├── <span class="td">repository/</span>  TransferRepository.java
+│       └── <span class="td">config/</span>      KafkaProducerConfig.java
+│                        GlobalExceptionHandler.java
+│
+└── <span class="td">balance-processor/</span>              <span class="tn">← headless, port 8081 actuator</span>
+    └── src/main/java/com/azizyilmaz/balance/
+        ├── <span class="tf">BalanceProcessorApplication.java</span>
+        ├── <span class="td">consumer/</span>    TransferEventConsumer.java   <span class="tn">← Kafka listener, sequential</span>
+        ├── <span class="td">service/</span>     BalanceUpdateService.java    <span class="tn">← idempotent balance update</span>
+        ├── <span class="td">domain/</span>      Account.java
+        │               ProcessedEvent.java
+        ├── <span class="td">repository/</span>  AccountRepository.java       <span class="tn">← SELECT FOR UPDATE</span>
+        │               ProcessedEventRepository.java
+        └── <span class="td">config/</span>      KafkaConsumerConfig.java     <span class="tn">← DLT, retry, manual ack</span>
+                        KafkaProducerConfig.java
+    </div>
+  </section>
+
+  <!-- 06 VERSION TABLE -->
+  <section>
+    <h2>06 — Version reference</h2>
+    <table>
+      <thead>
+        <tr><th>Component</th><th>Version</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Spring Boot</td><td><code>4.0.4</code></td><td>Jakarta EE 11 baseline</td></tr>
+        <tr><td>Spring Framework</td><td><code>7.0.6</code></td><td>Required by Spring Boot 4.0.x</td></tr>
+        <tr><td>Spring Kafka</td><td><code>4.0.4</code></td><td>Managed by Spring Boot BOM</td></tr>
+        <tr><td>Apache Kafka Client</td><td><code>4.1.0</code></td><td>Required by Spring Kafka 4.0.4</td></tr>
+        <tr><td>Hibernate</td><td><code>7.1</code></td><td>Jakarta Persistence 3.2</td></tr>
+        <tr><td>Flyway</td><td><code>11.11</code></td><td>spring-boot-starter-flyway required</td></tr>
+        <tr><td>HikariCP</td><td><code>7.0</code></td><td>Connection pool</td></tr>
+        <tr><td>Jackson</td><td><code>3.0</code></td><td>JSON serialisation</td></tr>
+        <tr><td>Testcontainers</td><td><code>2.0.4</code></td><td>@ServiceConnection replaces @DynamicPropertySource</td></tr>
+        <tr><td>Jakarta EE</td><td><code>11</code></td><td>All javax.* → jakarta.*</td></tr>
+        <tr><td>Maven</td><td><code>4.1.0</code></td><td>modelVersion 4.1.0, &lt;subprojects&gt;</td></tr>
+        <tr><td>Java</td><td><code>21</code></td><td>LTS — required by Spring Boot 4</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 07 QUICK START -->
+  <section>
+    <h2>07 — Quick start commands</h2>
+    <div class="code-block">
+<span class="cm"># 1. Start infrastructure</span>
+<span class="ck">docker compose up</span> <span class="cv">-d</span>
+
+<span class="cm"># 2. Send a transfer (from another terminal)</span>
+<span class="ch">curl</span> <span class="cv">-X POST</span> http://localhost:8080/api/v1/transfers \
+  <span class="cv">-H</span> 'Content-Type: application/json' \
+  <span class="cv">-d</span> '{
+    "firmAccountId":     "FIRM-001",
+    "customerAccountId": "CUST-123",
+    "amount":            500.00,
+    "correlationId":     "test-001"
+  }'
+
+<span class="cm"># 3. Check status — replace {id} with the transferId from the response above</span>
+<span class="ch">curl</span> http://localhost:8080/api/v1/transfers/<span class="cv">{id}</span>/status
+
+<span class="cm"># 4. Run all tests (Docker must be running for Testcontainers)</span>
+<span class="ck">./mvnw test</span>
+
+<span class="cm"># 5. View Kafka messages in the browser</span>
+<span class="cm">#    open http://localhost:8090 → topic: transfer.initiated.v1</span>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
