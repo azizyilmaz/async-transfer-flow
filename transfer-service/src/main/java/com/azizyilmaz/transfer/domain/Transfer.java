@@ -42,6 +42,7 @@ public class Transfer {
         transfer.amount = amount;
         transfer.firmAccountId = firmAccountId;
         transfer.customerAccountId = customerAccountId;
+        transfer.createdAt = Instant.now();
         return transfer;
     }
 

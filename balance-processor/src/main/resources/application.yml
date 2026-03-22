@@ -20,6 +20,8 @@ spring:
 
   kafka:
     bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    listener:
+      auto-startup: true
 
 server:
   port: 8081
