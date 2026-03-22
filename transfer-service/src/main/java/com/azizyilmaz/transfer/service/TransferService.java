@@ -55,6 +55,6 @@ public class TransferService {
         outbox.setAggregateType("Transfer");
         outbox.setEventType("TransferInitiated");
         outbox.setPayload(payload);
-        return null;
+        return outbox;
     }
 }

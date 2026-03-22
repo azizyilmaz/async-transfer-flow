@@ -1,5 +1,5 @@
 # Transfer System
-### Spring Boot 4.0.4 · Maven 4.1.0 · Java 21 · Apache Kafka · PostgreSQL 16
+### Spring Boot 4.0.4 · Maven 4.0.0 · Java 21 · Apache Kafka · PostgreSQL 16
 
 A production-ready, event-driven money transfer system built with the **Transactional Outbox Pattern**.  
 It solves a real-world problem: when many transfer requests arrive at the same time, a single firm account row in the database gets locked by all of them, causing timeouts. This project eliminates that problem by making balance updates asynchronous and sequential through Kafka.
@@ -32,7 +32,7 @@ It solves a real-world problem: when many transfer requests arrive at the same t
 File → Open → select the transfer-system/ folder
 ```
 
-> The root `pom.xml` uses Maven 4.1.0 multi-project format.  
+> The root `pom.xml` uses Maven 4.0.0 multi-project format.  
 > If IntelliJ shows a Maven import popup, click **Trust Project** and then **Load Maven Changes**.
 
 ---
@@ -144,7 +144,7 @@ In IntelliJ: right-click on a test class → **Run '...'**
 
 ```
 transfer-system/
-├── pom.xml                            ← Maven 4.1.0 root (multi-project)
+├── pom.xml                            ← Maven 4.0.0 root (multi-project)
 ├── docker-compose.yml                 ← PostgreSQL + Kafka infrastructure
 ├── mvnw / mvnw.cmd                    ← Maven wrapper scripts
 │
@@ -187,18 +187,18 @@ After three failed attempts, the message is moved to a separate Kafka topic call
 
 | Component | Version |
 |-----------|---------|
-| Spring Boot | 4.0.4 |
-| Spring Framework | 7.0.6 |
-| Spring Kafka | 4.0.4 |
-| Apache Kafka Client | 4.1.0 |
-| Hibernate | 7.1 |
-| Flyway | 11.11 |
-| HikariCP | 7.0 |
-| Jackson | 3.0 |
-| Testcontainers | 2.0.4 |
-| Jakarta EE Baseline | 11 |
-| Maven | 4.1.0 |
-| Java | 21 |
+| Spring Boot | 4.0.4   |
+| Spring Framework | 7.0.6   |
+| Spring Kafka | 4.0.4   |
+| Apache Kafka Client | 4.1.0   |
+| Hibernate | 7.1     |
+| Flyway | 11.11   |
+| HikariCP | 7.0     |
+| Jackson | 3.0     |
+| Testcontainers | 2.0.4   |
+| Jakarta EE Baseline | 11      |
+| Maven | 4.0.0   |
+| Java | 21      |
 
 ---
 
@@ -223,5 +223,5 @@ docker compose logs kafka-init
 **Maven dependencies are not downloading**  
 In IntelliJ, open the **Maven** panel on the right side and click the **Reload All Maven Projects** button (the circular arrow icon).
 
-**"modelVersion 4.1.0 is not recognised"**  
+**"modelVersion 4.0.0 is not recognised"**  
 This project needs Maven 4.x. IntelliJ 2024.1+ supports Maven 4. Verify the wrapper version with `./mvnw --version`.

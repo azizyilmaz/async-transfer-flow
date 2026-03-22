@@ -1,0 +1,11 @@
+package com.azizyilmaz.balance;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class BalanceProcessorApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(BalanceProcessorApplication.class, args);
+    }
+}

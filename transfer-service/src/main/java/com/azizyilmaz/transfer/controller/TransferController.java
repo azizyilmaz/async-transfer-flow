@@ -24,7 +24,11 @@ public class TransferController {
     @PostMapping
     public ResponseEntity<@NotNull TransferResponse> initiate(@Valid @RequestBody TransferRequest transferRequest) {
         UUID transferId = transferService.initiateTransfer(transferRequest);
-        return ResponseEntity.accepted().location(URI.create("/api/v1/transfers/" + transferId + "/status")).body(new TransferResponse(transferId, "INITIATED", "Transfer initiated successfully. Please query /status endpoint for status."));
+        return ResponseEntity
+                .accepted()
+                .location(URI.create("/api/v1/transfers/" + transferId + "/status"))
+                .body(new TransferResponse(transferId, "INITIATED",
+                        "Transfer initiated successfully. Please query /status endpoint for status."));
     }
 
     public record TransferResponse(UUID transferId, String status, String message) {
