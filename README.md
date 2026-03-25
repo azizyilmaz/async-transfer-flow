@@ -185,20 +185,17 @@ After three failed attempts, the message is moved to a separate Kafka topic call
 
 ## Version Reference
 
-| Component | Version |
-|-----------|---------|
-| Spring Boot | 4.0.4   |
-| Spring Framework | 7.0.6   |
-| Spring Kafka | 4.0.4   |
-| Apache Kafka Client | 4.1.0   |
-| Hibernate | 7.1     |
-| Flyway | 11.11   |
-| HikariCP | 7.0     |
-| Jackson | 3.0     |
-| Testcontainers | 2.0.4   |
-| Jakarta EE Baseline | 11      |
-| Maven | 4.0.0   |
-| Java | 21      |
+| Component | Version     |
+|-----------|-------------|
+| Spring Boot | 4.0.4       |
+| Spring Framework | 7.0.6       |
+| Spring Kafka | 4.0.4       |
+| Hibernate | 7.2.7.Final |
+| Flyway | 11.14.1     |
+| HikariCP | 7.0.2       |
+| Jackson | 3.1.0       |
+| Maven | 4.0.0       |
+| Java | 21          |
 
 ---
 

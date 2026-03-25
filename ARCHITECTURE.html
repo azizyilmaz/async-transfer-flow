@@ -323,7 +323,7 @@
     <h2>05 — Project structure</h2>
     <div class="tree">
 <span class="td">transfer-system/</span>
-├── <span class="tf">pom.xml</span>                        <span class="tn">← Maven 4.1.0 root, groupId: com.azizyilmaz</span>
+├── <span class="tf">pom.xml</span>                        <span class="tn">← Maven 4.0.0 root, groupId: com.azizyilmaz</span>
 ├── <span class="tf">docker-compose.yml</span>             <span class="tn">← postgres + kafka + kafka-ui</span>
 ├── <span class="tf">mvnw / mvnw.cmd</span>                <span class="tn">← Maven wrapper (Linux / Windows)</span>
 │
@@ -371,14 +371,11 @@
         <tr><td>Spring Boot</td><td><code>4.0.4</code></td><td>Jakarta EE 11 baseline</td></tr>
         <tr><td>Spring Framework</td><td><code>7.0.6</code></td><td>Required by Spring Boot 4.0.x</td></tr>
         <tr><td>Spring Kafka</td><td><code>4.0.4</code></td><td>Managed by Spring Boot BOM</td></tr>
-        <tr><td>Apache Kafka Client</td><td><code>4.1.0</code></td><td>Required by Spring Kafka 4.0.4</td></tr>
-        <tr><td>Hibernate</td><td><code>7.1</code></td><td>Jakarta Persistence 3.2</td></tr>
-        <tr><td>Flyway</td><td><code>11.11</code></td><td>spring-boot-starter-flyway required</td></tr>
-        <tr><td>HikariCP</td><td><code>7.0</code></td><td>Connection pool</td></tr>
-        <tr><td>Jackson</td><td><code>3.0</code></td><td>JSON serialisation</td></tr>
-        <tr><td>Testcontainers</td><td><code>2.0.4</code></td><td>@ServiceConnection replaces @DynamicPropertySource</td></tr>
-        <tr><td>Jakarta EE</td><td><code>11</code></td><td>All javax.* → jakarta.*</td></tr>
-        <tr><td>Maven</td><td><code>4.1.0</code></td><td>modelVersion 4.1.0, &lt;subprojects&gt;</td></tr>
+        <tr><td>Hibernate</td><td><code>7.2.7.Final</code></td><td>Jakarta Persistence 3.2</td></tr>
+        <tr><td>Flyway</td><td><code>11.14.1</code></td><td>spring-boot-starter-flyway required</td></tr>
+        <tr><td>HikariCP</td><td><code>7.0.2</code></td><td>Connection pool</td></tr>
+        <tr><td>Jackson</td><td><code>3.1.0</code></td><td>JSON serialisation</td></tr>
+        <tr><td>Maven</td><td><code>4.0.0</code></td><td>modelVersion 4.0.0, &lt;subprojects&gt;</td></tr>
         <tr><td>Java</td><td><code>21</code></td><td>LTS — required by Spring Boot 4</td></tr>
       </tbody>
     </table>
